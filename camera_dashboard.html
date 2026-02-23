@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Knoxville Traffic Command Center</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            background: #000; 
+            overflow: hidden; 
+        }
+        
+        /* This creates a 4-column layout for your 5120x1440 screen */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr; /* 4 columns side-by-side */
+            grid-template-rows: 100vh; /* 1 row that takes up the full screen height */
+            gap: 10px; /* Adds clean spacing between the cameras */
+            padding: 10px;
+            box-sizing: border-box; /* Keeps padding inside the screen width */
+        }
+        
+        /* Ensures the video fits inside the box without stretching */
+        video { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            background: #111;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="grid-container">
+    <video id="cam1" autoplay muted controls></video>
+    <video id="cam2" autoplay muted controls></video>
+    <video id="cam3" autoplay muted controls></video>
+    <video id="cam4" autoplay muted controls></video>
+</div>
+
+<script>
+    // PASTE YOUR TDOT .m3u8 LINKS HERE
+    const streams = [
+        'https://mcleansfs5.us-east-1.skyvdn.com/rtplive/R1_058/playlist.m3u8',
+        'https://mcleansfs2.us-east-1.skyvdn.com/rtplive/R1_021/playlist.m3u8',
+        'https://mcleansfs1.us-east-1.skyvdn.com/rtplive/R1_063/playlist.m3u8',
+        'https://mcleansfs2.us-east-1.skyvdn.com/rtplive/R1_074/playlist.m3u8'
+    ];
+
+    function setupStream(videoElementId, streamUrl) {
+        // Safety check: If there is no URL, stop here so the code doesn't crash
+        if (!streamUrl) return; 
+
+        var video = document.getElementById(videoElementId);
+        if (Hls.isSupported()) {
+            var hls = new Hls();
+            hls.loadSource(streamUrl);
+            hls.attachMedia(video);
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = streamUrl;
+        }
+    }
+
+    // Initialize all 4 slots
+    setupStream('cam1', streams[0]);
+    setupStream('cam2', streams[1]);
+    setupStream('cam3', streams[2]);
+    setupStream('cam4', streams[3]);
+
+    // --- AUTO REFRESH ADDED HERE ---
+    // Refresh the page every 4 hours (14,400,000 milliseconds)
+    setTimeout(function() {
+        location.reload();
+    }, 14400000);
+</script>
+
+</body>
+</html>
